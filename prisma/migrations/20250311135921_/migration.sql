@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE `user` ADD COLUMN `themeIdKey` INTEGER NOT NULL DEFAULT 3;
+
+-- AddForeignKey
+ALTER TABLE `User` ADD CONSTRAINT `User_themeIdKey_fkey` FOREIGN KEY (`themeIdKey`) REFERENCES `Theme`(`idTheme`) ON DELETE RESTRICT ON UPDATE CASCADE;

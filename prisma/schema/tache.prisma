@@ -1,0 +1,13 @@
+model Tache {
+    idTache          Int      @id @default(autoincrement())
+    tacheName        String
+    tacheDescription String
+    tacheStart       DateTime
+    tacheEnd         DateTime
+    tacheStatus      String //Not started, in progress, completed
+    tachePriority String //Low, medium, high
+    tacheAttribute   String?
+    document         Document[]
+    user             User     @relation(fields: [userId], references: [idUser], onDelete: Cascade)
+    userId           Int      @unique
+}

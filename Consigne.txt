@@ -1,0 +1,56 @@
+Pour lancer le projet
+
+///////////////////////////////////////////////Lancer Le back : 
+npm i
+nodemon
+
+
+///////////////////////////////////////////////Lancer le server :
+Lancer laragon et cliquer sur le bouton vert qui va lancer le server mysql avec apache
+ou 
+my sql workbench si installation avec server (ce n'est pas notre cas!!)
+
+
+///////////////////////////////////////////////Lancer l'emul de bdd si besoin :
+prisma 'npx prisma studio' : la bdd s'ouvre à la page concernée.
+Généralement localhost:5555
+
+
+///////////////////////////////////////////////Lancer le front : npm run dev
+
+
+///////////////////////////////////////////////Postman pour tester les requetes :
+Si besoin de test avec postman : 
+Cliquer sur l'iconde pacman a gauche de vscode
+Cliquer sur new HTTP request
+aller dans l'onglet body
+pour ce projet API, sélectionner raw pour tester un formulaire simple et modifier le dernier onglet text, qui vient d'apparaitre, en JSON
+rentrer la requete dans le champs editable de la manière suivante : 
+{
+    "nom": "DOE"
+    "Prenom": "John"
+    "Mail": "blabla@gmail.com"
+}
+Appuyer sur le bouton "send"
+
+Si le formulaire a un fichier, envoyer en formdata au lieu de raw et remplir les champs.
+Attention, pour le champs du fichier, il faut changer "text" en "file" à la fin du champs "key".
+
+Pour les requetes get, penser à changer le type de requete en get
+Pour afficher le résultat, aller dans l'onglet body
+
+METTRE LE FICHIER EN DERNIER!! 
+
+
+
+
+
+////////////////////////////////////////////////////SQUOOSH/////////////////////////////////////////////////////////////////
+
+IMPORTER EN SVG LE COMPOSANT DE 200X200
+METTRE EN WEBP
+REDIMENSIONNER EN 400X400
+LOSSLESS
+EFFORT 9
+SLIGHT LOSS 50
+<10kB

@@ -1,0 +1,6 @@
+model Theme {
+    idTheme    Int     @id @default(autoincrement())
+    themeName  String
+    icone      Icone[]
+    users User[]
+}
