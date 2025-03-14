@@ -2,7 +2,7 @@ model User {
     idUser        Int        @id @default(autoincrement())
     userName      String
     userFName     String
-    userMail      String
+    userMail      String     @unique
     userPassword  String
     userBirthDate DateTime?
     userAdress    String?

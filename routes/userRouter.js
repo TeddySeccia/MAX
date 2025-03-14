@@ -6,8 +6,11 @@ const deleteImage = require('../core/fs');
 const userRouter = require('express').Router();
 const prisma = new PrismaClient({ log: ['error'] }).$extends(hashPassword) //si plusieurs extends, les concatener "new PrismaClient().$extends(ext1).$extends(ext2).$extends(ext3);"
 const path = require('path');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
-userRouter.get('/getUser/:id', async (req, res) => { //Route fonctionnelle
+userRouter.get('/getUser/:id',authguard, async (req, res) => { //Route fonctionnelle
     console.log("rentre sur la route /getUser/:id - uR 11");
     try {
         const user = await prisma.user.findFirst({
@@ -15,6 +18,11 @@ userRouter.get('/getUser/:id', async (req, res) => { //Route fonctionnelle
                 idUser: parseInt(req.params.id),
             }
         })
+
+        if (!user) {
+            return res.status(404).json({ error: "Utilisateur non trouvé" });
+        }
+        
         res.json({
             user,
             title: "Accueil",
@@ -30,8 +38,6 @@ userRouter.put("/editPostUser/:id", upload.single('userAvatar'), async (req, res
     try {
         console.log("rentre sur la route /editPostUser/:id - uR31");
         console.log("32", req.body);
-        
-        
 
         const existingUser = await prisma.user.findUnique({ where: { idUser: parseInt(req.params.id) } });
         if (!existingUser) {
@@ -144,6 +150,52 @@ userRouter.get("/deleteUser/:id", async (req, res) => {//Route fonctionnelle
         res.json({ error }, "Erreur suppression utilisateur 147");
     }
 })
+
+userRouter.post('/login', async (req, res) => {//Route fonctionnelle
+    try {
+        console.log("rentre sur la route /login - uR 153");
+        const { email, password } = req.body;
+        const user = await prisma.user.findFirst({
+            where: {
+                userMail: req.body.userMail,
+            }
+        })
+
+        if (!user) {
+            return res.status(404).json({ error: "Utilisateur non trouvé" });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.userPassword);
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: "Mot de passe incorrect" });
+        }
+
+        const token = jwt.sign(
+            { userId: user.idUser, email: user.userMail }, // Payload
+            process.env.JWT_SECRET, // Clé secrète
+            { expiresIn: process.env.JWT_EXPIRES_IN } // Expiration
+        );
+
+        res.json({ message: "Connexion réussie", token });
+    } catch (error) {
+        console.log(error);
+        res.json({ error });
+    }
+})
+
+userRouter.post('/logout', async (req, res) => {// A terminer quand on saura comment gerer les tokens
+    try {
+        console.log("rentre sur la route /logout - uR 154");
+
+        // Côté backend, les JWT ne sont pas stockés, donc on ne peut pas "supprimer" un token
+        // La déconnexion consiste à faire en sorte que le frontend "oublie" le token
+        res.json({ message: "Déconnexion réussie" });
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Erreur lors de la déconnexion" });
+    }
+});
 
 
 
