@@ -113,6 +113,10 @@ userRouter.post('/addUser', upload.single('userAvatar'), async (req, res) => { /
 
                 }
             })
+            console.log(image);
+            console.log("117");
+            
+            
             res.json('Utilisateur ajouté avec succès');
 
         }
@@ -157,7 +161,7 @@ userRouter.post('/login', async (req, res) => {//Route fonctionnelle
         const { email, password } = req.body;
         const user = await prisma.user.findFirst({
             where: {
-                userMail: req.body.userMail,
+                userMail: email,
             }
         })
 
