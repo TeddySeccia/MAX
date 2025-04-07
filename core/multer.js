@@ -19,13 +19,15 @@ const mimeType = [
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
+      
+        
         if (req.body.userMail) {
             cb(null, './uploads/users')
         }
-        if (req.body.idDocument) {//A changer quand front dispo en req.session.idUser
+        else if (req.body.idDocument) {//A changer quand front dispo en req.session.idUser
             cb(null, './uploads/documents')
         }
-        if (req.body.iconeType) {
+        else if (req.body.iconeType) {
             cb(null, `./public/uploads/${req.body.iconeType}_icones`);
         }
     },

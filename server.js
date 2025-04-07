@@ -20,6 +20,7 @@ const app = express();
 app.use(cors());
 app.use(express.static('./publics'));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(userRouter);
 app.use(documentRouter);
 app.use(categoryRouter);

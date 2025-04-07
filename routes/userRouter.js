@@ -86,6 +86,8 @@ userRouter.post('/addUser', upload.single('userAvatar'), async (req, res) => { /
     localStorage.clear();
     sessionStorage.setItem('firstName', req.body.firstName); si on veut stocker des données dans le sessionStorage*/
     try {
+        console.log(req.body);
+        
         console.log("rentre sur la route /addUser - uR69");
         console.log("FICHIER UPLOADE :", req.file);
 
@@ -157,7 +159,8 @@ userRouter.get("/deleteUser/:id", async (req, res) => {//Route fonctionnelle
 
 userRouter.post('/login', async (req, res) => {//Route fonctionnelle
     try {
-        console.log("rentre sur la route /login - uR 153");
+        console.log("rentre sur la route /login - uR 160");
+
         const { email, password } = req.body;
         const user = await prisma.user.findFirst({
             where: {
@@ -180,7 +183,7 @@ userRouter.post('/login', async (req, res) => {//Route fonctionnelle
             { expiresIn: process.env.JWT_EXPIRES_IN } // Expiration
         );
 
-        res.json({ message: "Connexion réussie", token });
+        res.json({ message: "Connexion réussie", token, user });
     } catch (error) {
         console.log(error);
         res.json({ error });
