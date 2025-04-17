@@ -1,0 +1,21 @@
+model Icone {
+    idIcone         Int       @id @default(autoincrement())
+    iconeName       String
+    iconeColor      String
+    iconeAvatar     String
+    iconeType       Type
+    iconeAvatarPath String    @default("default.png")
+    category        Category? @relation(name: "IconeToCategory", fields: [categoryIdKey], references: [idCategory])
+    categoryIdKey   Int?      
+    theme           Theme?    @relation(name: "IconesToTheme", fields: [themeIdKey], references: [idTheme])
+    themeIdKey      Int?     
+    document        Document? @relation(name: "IconesToDocuments", fields: [documentIdKey], references: [idDocument])
+    documentIdKey   Int?      
+}
+
+enum Type {
+    CATEGORY
+    DOCUMENT
+    MENU
+    META
+}

@@ -14,6 +14,9 @@ documentRouter.get('/getDocument/:id', async (req, res) => { //
         const document = await prisma.document.findFirst({
             where: {
                 idDocument: parseInt(req.params.id),
+            },
+            include: {
+                icones: true,
             }
         })
         res.json({
@@ -48,6 +51,9 @@ documentRouter.post("/editPostDocument/:id", upload.single('documentAvatar'), as
                     documentSex: req.body.documentSex,
                     documentAvatar: image
 
+                },
+                icones: {
+                    connect: { idIcone: parseInt(req.body.idIcone) }
                 }
             })
             res.json('Utilisateur modifié avec succès');
@@ -61,6 +67,7 @@ documentRouter.post("/editPostDocument/:id", upload.single('documentAvatar'), as
 })
 
 documentRouter.post('/addDocument', upload.single('documentAvatar'), async (req, res) => { // Route fonctionnelle
+    console.log("params reçus :", req.file);
     try {
         console.log("rentre sur la route /addDocument - uR65");
         const documentReal = req.file ? req.file.filename : null;

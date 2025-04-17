@@ -1,0 +1,7 @@
+model Folder {
+  idFolder   Int        @id @default(autoincrement())
+  folderName String
+  user       User       @relation(name: "FolderToUser", fields: [userIdKey], references: [idUser], onDelete: Cascade)
+  userIdKey  Int        @unique
+  documents  Document[] @relation(name: "DocumentsToFolder")
+}

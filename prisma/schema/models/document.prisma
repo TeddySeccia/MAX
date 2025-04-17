@@ -1,0 +1,31 @@
+model Document {
+  idDocument        Int        @id @default(autoincrement())
+  documentName      String
+  documentType      String //Facture/Devis/Contrat/etc...
+  documentEditBy    String? //Nom de la personne ayant édité le document caisse d'épargne/la poste/sfr/free/etc...
+  documentEditDate  DateTime? //Date de création du document
+  documentAbout     String? //Description du document
+  documentAddDate   DateTime?  @default(now()) //Date d'ajout du document
+  documentSize      Int //Taille du document en octets
+  documentExtension String //type d'extension de fichier pdf/jpg/etc...
+  documentPayNumber Int? //montant à payer
+  documentPayDate   DateTime? //Date de paiement
+  documentAttribute Attribute? @default(NON_LU) //lu/non lu/important/payé
+  taches            Tache[]    @relation(name: "TachesToDocuments")
+  documentPath      String
+  documentAvatar    String? //Image du document
+  user              User       @relation(name: "DocumentsToUser", fields: [userIdKey], references: [idUser], onDelete: Cascade)
+  userIdKey         Int        
+  folder            Folder?    @relation(name: "DocumentsToFolder", fields: [folderIdKey], references: [idFolder])
+  folderIdKey       Int?       
+  category          Category   @relation(name: "DocumentsToCategory", fields: [categoryIdKey], references: [idCategory], onDelete: Cascade) //maison/transport/banque/etc...
+  categoryIdKey     Int        
+  icones            Icone[]    @relation(name: "IconesToDocuments")
+}
+
+enum Attribute {
+  LU
+  NON_LU
+  PAYE
+  IMPORTANT
+}

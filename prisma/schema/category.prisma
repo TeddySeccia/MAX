@@ -1,7 +1,0 @@
-model Category {
-    idCategory     Int        @id @default(autoincrement())
-    categoryName   String
-    categoryParent Int?
-    documents      Document[]
-    icones         Icone[]
-}

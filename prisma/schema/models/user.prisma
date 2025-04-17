@@ -1,0 +1,31 @@
+model User {
+  idUser         Int        @id @default(autoincrement())
+  userName       String
+  userFName      String
+  userMail       String     @unique
+  userPassword   String
+  userBirthDate  DateTime?
+  userAdress     String?
+  userTel        String?
+  userRole       Role       @default(USER)
+  userSex        Genre?
+  folder         Folder?    @relation(name: "FolderToUser")
+  taches         Tache[]    @relation(name: "TachesToUser")
+  documents      Document[] @relation(name: "DocumentsToUser")
+  categories     Category[] @relation(name: "CategoriesToUser")
+  theme          Theme      @relation(name: "UsersToTheme", fields: [themeIdKey], references: [idTheme])
+  themeIdKey     Int        @default(1)
+  userAvatar     String?
+  userAvatarPath String?
+}
+
+enum Genre {
+  HOMME
+  FEMME
+  AUTRE
+}
+
+enum Role {
+  ADMIN
+  USER
+}

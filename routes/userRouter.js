@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 const { PrismaClient, Role, Genre } = require('@prisma/client');
 const hashPassword = require('../services/extensions/hashPasswordExtension');
 const upload = require('../core/multer')
@@ -7,32 +9,28 @@ const userRouter = require('express').Router();
 const prisma = new PrismaClient({ log: ['error'] }).$extends(hashPassword) //si plusieurs extends, les concatener "new PrismaClient().$extends(ext1).$extends(ext2).$extends(ext3);"
 const path = require('path');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-userRouter.get('/getUser/:id',authguard, async (req, res) => { //Route fonctionnelle
-    console.log("rentre sur la route /getUser/:id - uR 11");
+userRouter.get('/getUser', authguard, async (req, res) => {
     try {
-        const user = await prisma.user.findFirst({
-            where: {
-                idUser: parseInt(req.params.id),
-            }
-        })
+        const userId = req.user.userId;
+
+        const user = await prisma.user.findUnique({
+            where: { idUser: userId }
+        });
 
         if (!user) {
             return res.status(404).json({ error: "Utilisateur non trouvé" });
         }
-        
-        res.json({
-            user,
-            title: "Accueil",
-        })
-    }
-    catch (error) {
-        console.log(error);
-        res.json({ error });
+
+        res.json(user);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Erreur lors de la récupération de l'utilisateur" });
     }
 });
+
 
 userRouter.put("/editPostUser/:id", upload.single('userAvatar'), async (req, res) => {//Route fonctionnelle
     try {
@@ -86,8 +84,8 @@ userRouter.post('/addUser', upload.single('userAvatar'), async (req, res) => { /
     localStorage.clear();
     sessionStorage.setItem('firstName', req.body.firstName); si on veut stocker des données dans le sessionStorage*/
     try {
-        console.log(req.body);
-        
+        console.log("userRouter 87 req.body", req.body);
+
         console.log("rentre sur la route /addUser - uR69");
         console.log("FICHIER UPLOADE :", req.file);
 
@@ -97,8 +95,6 @@ userRouter.post('/addUser', upload.single('userAvatar'), async (req, res) => { /
 
             const image = req.file ? req.file.filename : "iconeAvatar-1741876409054-461400216.png";
             const imagePath = req.file ? req.file.path : path.join(__dirname, 'public', 'uploads', 'META_icones', 'iconeAvatar-1741876409054-461400216.png');
-
-
             const users = await prisma.user.create({
                 //data : {fields de droite "req.body.firstName" sont les memes que les "name" dans le formulaire il faut qu'ils s'appellent pareil} gauche db droite formulaire
                 data: {
@@ -110,15 +106,19 @@ userRouter.post('/addUser', upload.single('userAvatar'), async (req, res) => { /
                     userAdress: req.body.userAdress,
                     userTel: req.body.userTel,
                     userSex: req.body.userSex,
+                    theme: {
+                        connect: { idTheme: 1 } // ← Option 2 (relation correcte)
+                      },
                     userAvatar: image,
                     userAvatarPath: imagePath,
+
 
                 }
             })
             console.log(image);
             console.log("117");
-            
-            
+
+
             res.json('Utilisateur ajouté avec succès');
 
         }
@@ -182,11 +182,20 @@ userRouter.post('/login', async (req, res) => {//Route fonctionnelle
             process.env.JWT_SECRET, // Clé secrète
             { expiresIn: process.env.JWT_EXPIRES_IN } // Expiration
         );
+        console.log("token créé 183uR ",token);
 
-        res.json({ message: "Connexion réussie", token, user });
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "strict",
+            maxAge: 1000 * 60 * 60, // 1 heure
+            expires: new Date(Date.now() + 1000 * 60 * 60) // expire dans 1 heure
+        });
+
+        res.json({ message: "Connexion réussie", user });
     } catch (error) {
         console.log(error);
-        res.json({ error });
+        res.status(500).json({ error: "Erreur interne uR196" })
     }
 })
 
@@ -197,7 +206,7 @@ userRouter.post('/logout', async (req, res) => {// A terminer quand on saura com
         // Côté backend, les JWT ne sont pas stockés, donc on ne peut pas "supprimer" un token
         // La déconnexion consiste à faire en sorte que le frontend "oublie" le token
         res.json({ message: "Déconnexion réussie" });
-        
+
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: "Erreur lors de la déconnexion" });

@@ -1,0 +1,9 @@
+model Category {
+    idCategory     Int        @id @default(autoincrement())
+    categoryName   String
+    categoryParent Int?
+    user           User       @relation(name: "CategoriesToUser", fields: [userIdKey], references: [idUser])
+    userIdKey      Int        
+    documents      Document[] @relation(name: "DocumentsToCategory")
+    icones         Icone[]    @relation(name: "IconeToCategory")
+}

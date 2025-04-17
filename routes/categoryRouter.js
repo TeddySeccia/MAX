@@ -14,7 +14,11 @@ categoryRouter.post('/addCategory', async (req, res) => { // Route fonctionnelle
                 categoryName: req.body.categoryName,
                 icones: {
                     connect: { idIcone: parseInt(req.body.idIcone) }
+                },
+                user: {
+                    connect: { idUser: parseInt(req.body.idUser) }
                 }
+
             }
         })
         res.json('category ajouté avec succès');
@@ -43,7 +47,7 @@ categoryRouter.get("/deleteCategory/:id", async (req, res) => {// Route fonction
 categoryRouter.get('/getCategory/:id', async (req, res) => {//Route fonctionnelle
 
     try {
-        console.log("rentre sur la route /getCategory/:idCategory - uR 45");
+        console.log("rentre sur la route /getCategory/:id - uR 45");
         const getCategory = await prisma.category.findFirst({
             where: {
                 idCategory: parseInt(req.params.id),
@@ -61,23 +65,53 @@ categoryRouter.get('/getCategory/:id', async (req, res) => {//Route fonctionnell
     }
 })
 
-categoryRouter.get('/getCategories', async (req, res) => {//Route fonctionnelle
+categoryRouter.get('/getCategories/:userId', async (req, res) => {//Route fonctionnelle
 
     try {
         console.log("rentre sur la route /getCategories - cR65");
         const getCategories = await prisma.category.findMany({
+            where: {
+                userIdKey: parseInt(req.params.userId),
+
+            },
             include: {
                 icones: true,
             }
         })
-        res.json({
+        res.json(
             getCategories
-        })
+        )
     } catch (error) {
         res.json({ error });
     }
 
 })
+
+// Exemple route Express
+categoryRouter.get('/getCategoriesByParent/:userId/:parentId', async (req, res) => {
+    const { userId, parentId } = req.params;
+    console.log(" cR96 rentre sur la route /getCategoriesByParent/:userId/:parentId");
+    
+    console.log(parentId);
+
+    try {
+        const categories = await prisma.category.findMany({
+            where: {
+                userIdKey: parseInt(userId),
+                categoryParent: parentId ? parseInt(parentId) : null
+            },
+            include: {
+                icones: true
+            }
+        });
+
+        res.json(categories);
+    } catch (err) {
+        console.error("Erreur getCategoriesByParent", err);
+        res.status(500).json({ error: "Erreur serveur" });
+    }
+});
+
 
 categoryRouter.put("/editPostCategory/:id", async (req, res) => {//Route fonctionnelle
     try {
