@@ -11,9 +11,9 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
-userRouter.get('/getUser', authguard, async (req, res) => {
+userRouter.get('/getUser/:id', authguard, async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = parseInt(req.params.id, 10);
 
         const user = await prisma.user.findUnique({
             where: { idUser: userId }
@@ -108,7 +108,7 @@ userRouter.post('/addUser', upload.single('userAvatar'), async (req, res) => { /
                     userSex: req.body.userSex,
                     theme: {
                         connect: { idTheme: 1 } // ← Option 2 (relation correcte)
-                      },
+                    },
                     userAvatar: image,
                     userAvatarPath: imagePath,
 
@@ -177,34 +177,48 @@ userRouter.post('/login', async (req, res) => {//Route fonctionnelle
             return res.status(401).json({ error: "Mot de passe incorrect" });
         }
 
-        const token = jwt.sign(
+        const accessToken = jwt.sign(
             { userId: user.idUser, email: user.userMail }, // Payload
             process.env.JWT_SECRET, // Clé secrète
             { expiresIn: process.env.JWT_EXPIRES_IN } // Expiration
         );
-        console.log("token créé 183uR ",token);
+        console.log("accessToken créé 183uR ", accessToken);
 
-        res.cookie("token", token, {
+        const refreshToken = jwt.sign(
+            { userId: user.idUser, email: user.userMail }, // Payload
+            process.env.JWT_REFRESH_SECRET, // Clé secrète
+            { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN } // Expiration
+        );
+        console.log("refreshToken créé 183uR ", refreshToken);
+
+
+        res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
             secure: false,
-            sameSite: "strict",
-            maxAge: 1000 * 60 * 60, // 1 heure
-            expires: new Date(Date.now() + 1000 * 60 * 60) // expire dans 1 heure
+            sameSite: "Lax",
+            maxAge: 1000 * 60 * 60 * 24 * 7, // 7 jours
+            expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7) // expire dans 7 jours
         });
 
-        res.json({ message: "Connexion réussie", user });
+        res.json({
+            message: "Connexion réussie",
+            user,
+            accessToken, // à ajouter
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: "Erreur interne uR196" })
     }
-})
+});
 
-userRouter.post('/logout', async (req, res) => {// A terminer quand on saura comment gerer les tokens
+userRouter.post('/logout', async (req, res) => {
     try {
-        console.log("rentre sur la route /logout - uR 154");
+        console.log("Déconnexion demandée - uR 154");
 
-        // Côté backend, les JWT ne sont pas stockés, donc on ne peut pas "supprimer" un token
-        // La déconnexion consiste à faire en sorte que le frontend "oublie" le token
+        // Supprimer les cookies contenant les tokens
+        res.clearCookie('refreshToken', { httpOnly: true, secure: false });
+
+        // Retourner une réponse indiquant que la déconnexion a réussi
         res.json({ message: "Déconnexion réussie" });
 
     } catch (error) {

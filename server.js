@@ -13,6 +13,7 @@ const folderRouter = require('./routes/folderRouter');
 const iconeRouter = require('./routes/iconeRouter');
 const checkTokenRouter = require('./routes/checkTokenRouter')
 const childrenRouter = require('./routes/childrenRouter')
+const refreshTokenRouter = require('./routes/refreshTokenRouter')
 
 
 
@@ -42,6 +43,7 @@ app.use(tacheRouter);
 app.use(folderRouter);
 app.use(iconeRouter);
 app.use(checkTokenRouter);
+app.use(refreshTokenRouter)
 app.use(childrenRouter);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
