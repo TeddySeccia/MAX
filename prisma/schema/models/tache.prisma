@@ -1,7 +1,7 @@
 model Tache {
   idTache          Int        @id @default(autoincrement())
   tacheName        String
-  tacheDescription String
+  tacheDescription String 
   tacheStart       DateTime
   tacheEnd         DateTime
   tacheStatus      String //Not started, in progress, completed

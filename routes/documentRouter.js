@@ -70,7 +70,7 @@ documentRouter.post('/addDocument', upload.single('documentAvatar'), async (req,
     console.log("params reçus :", req.file);
     try {
         console.log("rentre sur la route /addDocument - uR65");
-        const documentReal = req.file ? req.file.filename : null;
+        const documentReal = req.file ? req.file.filename : "iconeAvatar-1741876409054-461400216.png";;
         //data : {fields de droite "req.body.firstName" sont les memes que les "name" dans le formulaire il faut qu'ils s'appellent pareil} gauche db droite formulaire
         const documents = await prisma.document.create({
             data: {

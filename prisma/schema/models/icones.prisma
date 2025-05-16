@@ -9,8 +9,8 @@ model Icone {
     categoryIdKey   Int?      
     theme           Theme?    @relation(name: "IconesToTheme", fields: [themeIdKey], references: [idTheme])
     themeIdKey      Int?     
-    document        Document? @relation(name: "IconesToDocuments", fields: [documentIdKey], references: [idDocument])
-    documentIdKey   Int?      
+    document        Document[] @relation(name: "IconesToDocuments")
+        
 }
 
 enum Type {

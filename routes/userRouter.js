@@ -196,8 +196,8 @@ userRouter.post('/login', async (req, res) => {//Route fonctionnelle
             httpOnly: true,
             secure: false,
             sameSite: "Lax",
-            maxAge: 1000 * 60 * 60 * 24 * 7, // 7 jours
-            expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7) // expire dans 7 jours
+            maxAge: 1000 * 60 * 60 * 24 * 1, // 1 jours
+            expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 1) // expire dans 7 jours
         });
 
         res.json({

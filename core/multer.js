@@ -9,6 +9,7 @@ const mimeTypes = [
   "image/bmp",
   "image/webp",
   "image/svg+xml",
+  'text/plain',
   "application/pdf",
   "application/msword",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
